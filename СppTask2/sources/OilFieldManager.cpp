@@ -33,7 +33,6 @@ void OilFieldManager::addNewWells() {
         switch (type) {
             case 1: {
                 this->oilField_.addWell(OilWell(name));
-
                 break;
             }
             case 2: {

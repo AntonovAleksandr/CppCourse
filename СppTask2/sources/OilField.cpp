@@ -8,6 +8,7 @@
 #include "../headers/exeptions/RunOutResurseExeption.h"
 #include "../headers/exeptions/InsufficientResourceExeption.h"
 #include "../headers/exeptions/NoValumeExeption.h"
+#include "../headers/exeptions/NoBoreholeExeption.h"
 #include <algorithm>
 #include <iostream>
 
@@ -62,8 +63,11 @@ void OilField::addWell(Borehole borehole) {
 
 
 void OilField::setPlan(std::string name, float plan) {
+    if (wells.empty()) return;
+    bool boreholeIsFound = false;
     for (int i = 0; i < wells.size(); i++) {
         if (wells[i].getName() == name) {
+            boreholeIsFound = true;
             WellType type = wells[i].getType();
             if (WellType::GAS == type) {
                 if (gasVolume >= gasPlan + plan) {
@@ -115,27 +119,54 @@ void OilField::setPlan(std::string name, float plan) {
 }
 
 void OilField::removeWell(std::string name) {
+    if (wells.empty()) return;
+    bool boreholeIsFound = false;
     for (int i = 0; i < wells.size(); i++) {
         if (wells[i].getName() == name) {
+            boreholeIsFound = true;
             wells.erase(wells.begin() + i);
             i--;
+        }
+    }
+    if(!boreholeIsFound){
+        try
+        {
+            throw nobex;
+        }
+        catch (NoBoreholeExeption e)
+        {
+            std::cout << e.what() << '\n';
         }
     }
 }
 
 void OilField::stopWell(std::string name) {
     if (wells.empty()) return;
+    bool boreholeIsFound = false;
     for (int i = 0; i < wells.size(); i++) {
         if (wells[i].getName() == name) {
+            boreholeIsFound = true;
             wells[i].stop();
+        }
+    }
+    if(!boreholeIsFound){
+        try
+        {
+            throw nobex;
+        }
+        catch (NoBoreholeExeption e)
+        {
+            std::cout << e.what() << '\n';
         }
     }
 }
 
 void OilField::startWell(std::string name) {
     if (wells.empty()) return;
+    bool boreholeIsFound = false;
     for (int i = 0; i < wells.size(); i++) {
         if (wells[i].getName() == name) {
+            boreholeIsFound = true;
             if (wells[i].getType() == WellType::OIL) {
                 if(waterPlan > 0) {
                     wells[i].start(std::min(waterPlan, wells[i].getPlan()));
@@ -156,6 +187,16 @@ void OilField::startWell(std::string name) {
             correctVolume(wells[i]);
         }
     }
+    if(!boreholeIsFound){
+        try
+        {
+            throw nobex;
+        }
+        catch (NoBoreholeExeption e)
+        {
+            std::cout << e.what() << '\n';
+        }
+    }
 }
 
 void OilField::correctVolume(Borehole borehole) {
@@ -174,7 +215,7 @@ void OilField::correctVolume(Borehole borehole) {
         water += borehole.getVolume();;
         borehole.setVolume(0);
         borehole.setPlan(borehole.getPlan() - water);
-        waterPlan += water;
+        waterPlan -= water;
     }
     this->oilVolume -= oil;
     this->gasVolume -= gas;
