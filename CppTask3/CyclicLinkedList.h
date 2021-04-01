@@ -13,16 +13,38 @@ class CyclicLinkedList {
 private:
     ListElement *root;
 public:
+    CyclicLinkedList(T[] list) {
+        add(list);
+    }
+
+    CyclicLinkedList(std::vector<T> list) {
+        add(list);
+    }
+
     CyclicLinkedList(CyclicLinkedList list) {
         add(list);
     }
 
     CyclicLinkedList(const ListElement &root) {
-        root = root;
+        add(root);
     }
 
     CyclicLinkedList() {
         root = nullptr;
+    }
+
+    void add(std::vector<T> list) {
+        if(list.isEmpty()) return;
+        for (T element : list){
+            add(element);
+        }
+    }
+
+    void add(T[] list) {
+        if(list.isEmpty()) return;
+        for (T element : list){
+            add(element);
+        }
     }
 
     void add(CyclicLinkedList list) {
@@ -88,8 +110,8 @@ public:
         ListElement *listElement = new ListElement(num);
         if(isEmpty())
         {
-            root.next = root;
             root = listElement;
+            root.next = root;
         }
         else
         {
@@ -103,26 +125,25 @@ public:
         }
     };
 
-
-    int getIndex(T i){
+//Un completed
+    int getIndex(T data){
         if(isEmpty()) return;
 
         ListElement *current = root;
-        if(root->next != root){
-            if(current.data == i){
-                return current;
-            }
-            while (current->next != root){
+        if(root->next == root) {
+            if (current.data == data) {
+                return 0;
+            } else return -1;
+        }
 
-                current = current->next;
-            }
-        } else {
+        while (current->next != root){
 
+            current = current->next;
         }
 
     };
 
-    //completed
+
     ListElement get(int target){
         if(isEmpty()) return;
 
@@ -137,7 +158,5 @@ public:
         if(root == nullptr) return true;
         return false;
     }
-
-
 
 };
