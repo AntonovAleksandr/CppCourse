@@ -9,8 +9,9 @@ template<typename T>
 class ListElement {
 private:
     T data;
-    ListElement *next;
+
 public:
+    ListElement *next;
     ListElement(T data){
         this->data = data;
         this->next = nullptr;

@@ -29,6 +29,7 @@ public:
     OilField();
     std::vector<Borehole> getWells();
     void addWell(Borehole borehole);
+    void addWell(std::string name, WellType type);
     void removeWell(std::string name);
     void stopWell(std::string name);
     void startWell(std::string name);

@@ -33,14 +33,17 @@ void OilFieldManager::addNewWells() {
         switch (type) {
             case 1: {
                 this->oilField_.addWell(OilWell(name));
+                isUnCorrect = false;
                 break;
             }
             case 2: {
                 this->oilField_.addWell(InjectionWell(name));
+                isUnCorrect = false;
                 break;
             }
             case 3: {
                 this->oilField_.addWell(GasWell(name));
+                isUnCorrect = false;
                 break;
             }
             default: {

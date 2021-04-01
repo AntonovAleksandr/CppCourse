@@ -19,8 +19,11 @@ public:
 
     void add(T num) {
         ListElement *listElement = new ListElement(num);
-        if(root == nullptr)     //если создаем первый узел
+        if(root == nullptr)
+        {
             root = listElement;
+            root.next = root;
+        }
         else                 //если узел уже не первый
         {
             ListElement *current = root;
