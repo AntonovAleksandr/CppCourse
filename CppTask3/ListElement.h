@@ -5,14 +5,16 @@
 #ifndef CPPTASK3_LISTELEMENT_H
 #define CPPTASK3_LISTELEMENT_H
 
-
+template<typename T>
 class ListElement {
 private:
-    int data;
+    T data;
     ListElement *next;
 public:
-    ListElement(int data);
+    ListElement(T data){
+        this->data = data;
+        this->next = nullptr;
+    }
 };
-
 
 #endif //CPPTASK3_LISTELEMENT_H
