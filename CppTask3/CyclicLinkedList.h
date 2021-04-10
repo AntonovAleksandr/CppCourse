@@ -1,19 +1,19 @@
-//
-// Created by aleksandr on 31.03.2021.
-//
 
 #ifndef CPPTASK3_CYCLICLINKEDLIST_H
 #define CPPTASK3_CYCLICLINKEDLIST_H
 
 
+#include <vector>
+#include <string>
 #include "ListElement.h"
 
 template<typename T>
 class CyclicLinkedList {
 private:
-    ListElement *root;
+    ListElement<T> *m_root;
+    int m_size;
 public:
-    CyclicLinkedList(T[] list) {
+    CyclicLinkedList(T* list[]) {
         add(list);
     }
 
@@ -21,16 +21,17 @@ public:
         add(list);
     }
 
-    CyclicLinkedList(CyclicLinkedList list) {
+    CyclicLinkedList(CyclicLinkedList *list) {
         add(list);
     }
 
-    CyclicLinkedList(const ListElement &root) {
+    CyclicLinkedList(ListElement<T> root) : m_root(root) {
         add(root);
     }
 
     CyclicLinkedList() {
-        root = nullptr;
+        m_root = nullptr;
+        m_size = 0;
     }
 
     void add(std::vector<T> list) {
@@ -40,17 +41,16 @@ public:
         }
     }
 
-    void add(T[] list) {
-        if(list.isEmpty()) return;
-        for (T element : list){
+    void add(T* lest[]) {
+        for (T element : lest){
             add(element);
         }
     }
 
     void add(CyclicLinkedList list) {
         if(list.isEmpty()) return;
-        ListElement *target =  list.root;
-        ListElement *current =  target->next;
+        ListElement<T> *target =  list.m_root;
+        ListElement<T> *current =  target->next;
         if(current == target){
             add(target);
         } else
@@ -60,64 +60,102 @@ public:
         }
     }
 
-    //completed
     void add(T num) {
-        ListElement *listElement = new ListElement(num);
+        ListElement<T> *listElement = new ListElement<T>(num);
 
         if(isEmpty())
         {
-            root = listElement;
-            root.next = root;
+            m_root = listElement;
+            m_root->next = m_root;
         }
         else
         {
-            ListElement *current = root;
-            while(current->next != root)
+            ListElement<T> *current = m_root;
+            while(current->next != m_root)
                 current = current->next;
             current->next = listElement;
+            current->next->next = m_root;
         }
+        m_size++;
     }
 
-    //completed
     void remove(T i){
         if(isEmpty()) return;
 
-        ListElement *current = root;
-        while (current->next != root){
-            if(current.data == i){
-                return current;
-            }
-            current = current->next;
+        if(m_size == 1 && m_root->getData() == i) {
+            m_root = nullptr;
+            m_size--;
+            return;
         }
 
+        ListElement<T> *current = m_root->next;
+        ListElement<T> *pre = m_root;
+
+        if(m_root->getData() == i){
+            while (current != m_root){
+                pre = current;
+                current = current->next;
+            }
+            pre->next = current->next;
+            m_root = m_root->next;
+            m_size--;
+        }
+        else {
+            while (current != m_root){
+                if(current->getData() == i){
+                    pre->next = current->next;
+                    m_size--;
+                    return;
+                }
+                pre = current;
+                current = current->next;
+            }
+        }
     };
 
-    //completed
     void removeByIndex(int i){
-
         if(isEmpty()) return;
+        if(i%(m_size + 1) == 0){
+            ListElement<T> *current = m_root->next;
+            ListElement<T> *pre = m_root;
+            while (current != m_root){
+                pre = current;
+                current = current->next;
+            }
+            pre->next = current->next;
+            m_root = m_root->next;
+            m_size--;
+            return;
+        }
 
-        ListElement *current = root;
+        ListElement<T> *current = m_root;
         for(int j = 0; j < i-1; j++){
             current = current->next;
         }
-        ListElement *removeElement = current->next;
-        current->next = removeElement->next;
+        current->next = current->next->next;
+        m_size--;
     };
 
-    //completed
     void insertInto(int i, T element){
-        ListElement *listElement = new ListElement(num);
+        ListElement<T> *listElement = new ListElement<T>(element);
         if(isEmpty())
         {
-            root = listElement;
-            root.next = root;
+            m_root = listElement;
+            m_root->next = m_root;
+            return;
         }
-        else
-        {
-            ListElement *current = root;
-            for(int j = 0; j < i; j++){
+        ListElement<T> *current = m_root->next;
+        if(i == 0){
+            while (current->next != m_root){
+                current = current->next;
+            }
+            listElement->next = current->next;
+            current->next = listElement;
+            m_root = listElement;
 
+        }
+        else {
+            for(int j = 0; j < i-1; j++){
                 current = current->next;
             }
             listElement->next = current->next;
@@ -125,38 +163,90 @@ public:
         }
     };
 
-//Un completed
     int getIndex(T data){
-        if(isEmpty()) return;
+        if(isEmpty()) return -1;
 
-        ListElement *current = root;
-        if(root->next == root) {
-            if (current.data == data) {
+        int result = 0;
+        ListElement<T> *current = m_root;
+
+        if(m_root->next == m_root) {
+            if (current->getData() == data) {
                 return 0;
             } else return -1;
         }
 
-        while (current->next != root){
-
+        while (current->next != m_root){
+            if(current->getData() == data){
+                return result;
+            }
+            result++;
             current = current->next;
         }
-
+        return -1;
     };
 
+    T get(int index){
+        if(isEmpty()) return T();
 
-    ListElement get(int target){
-        if(isEmpty()) return;
-
-        ListElement *current = root;
-        for(int i = 0; i < target; i++){
+        ListElement<T> *current = m_root;
+        for(int i = 0; i < index; i++){
             current = current->next;
         }
-        return current;
+        return current->getData();
     };
 
     bool isEmpty(){
-        if(root == nullptr) return true;
+        if(m_root == nullptr) return true;
         return false;
     }
 
+    std::string toString(){
+        if(isEmpty()) return "[]";
+
+        ListElement<T> *current = m_root->next;
+        std::string result = "[" + std::to_string(m_root->getData());
+        while (current != m_root){
+            result += " " + std::to_string(current->getData());
+            current = current->next;
+        }
+        result += "]";
+        return result;
+    }
+
+    int getSize(){
+        return m_size;
+    }
+
+    class Iterator {
+        friend class CyclicLinkedList<T>;
+    protected:
+        ListElement<T>* m_node;
+        const CyclicLinkedList* m_list;
+    public:
+        Iterator() : m_node(nullptr), m_list(nullptr) {
+        }
+        Iterator(const CyclicLinkedList* list, ListElement<T>* node)
+                : m_node(node), m_list(list) {
+        }
+        T& operator*() { return m_node->value; }
+        bool operator!=(const Iterator& lhs) const {
+            return *this != lhs;
+        }
+        bool operator==(const Iterator& lhs) const {
+            return m_list == lhs.m_list && m_node == lhs.m_node;
+        }
+        Iterator next_it() const {
+            if (m_node != nullptr)
+                return Iterator(m_list, m_node->next);
+            return *this;
+        }
+        Iterator& operator++() {
+            if (m_node != nullptr)
+                m_node = m_node->next;
+            return *this;
+        }
+    };
 };
+
+
+#endif CPPTASK3_CYCLICLINKEDLIST_H

@@ -8,13 +8,16 @@
 template<typename T>
 class ListElement {
 private:
-    T data;
+    T m_data;
 
 public:
     ListElement *next;
     ListElement(T data){
-        this->data = data;
+        this->m_data = data;
         this->next = nullptr;
+    }
+    T getData(){
+        return m_data;
     }
 };
 
